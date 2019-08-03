@@ -13,6 +13,10 @@ const portfinder = require('portfinder')
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
+const bodyParser = require('body-parser');
+
+const fs = require('fs');
+
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
@@ -42,6 +46,22 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
+    },
+    before(app){
+        app.get('/api/list',(req,res) => {
+
+            let list = JSON.parse(fs.readFileSync(path.join(__dirname,'../mock/list.json'),'utf-8'));
+
+            res.send({code:1,data:list})
+        })
+
+        app.post('/api/add',bodyParser.json(),(req,res) => {
+            let list = JSON.parse(fs.readFileSync(path.join(__dirname,'../mock/list.json'),'utf-8'));
+            req.body.id = new Date().getTime();
+            list.push(req.body);
+            fs.writeFileSync(path.join(__dirname,'../mock/list.json'),JSON.stringify(list));
+            res.send({code:1,data:req.body})
+        })
     }
   },
   plugins: [

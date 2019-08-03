@@ -1,7 +1,7 @@
 <template>
     <div>
         <header>
-            <span>送至：</span>
+            <span @click="$router.push('/list')">送至：{{show}}</span>
         </header>
         <swiper :options="swiperOption" ref="mySwiper">
             <!-- slides -->
@@ -19,11 +19,21 @@
 </template>
 
 <script>
+import {mapGetters,mapActions} from 'vuex'
 export default {
     data(){
         return {
             swiperOption:{}
         }
+    },
+    computed:{
+        ...mapGetters(['show'])
+    },
+    methods:{
+        ...mapActions(['getList'])
+    },
+    created(){
+        this.getList()
     }
 }
 </script>
